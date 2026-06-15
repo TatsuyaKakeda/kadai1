@@ -23,11 +23,11 @@ def test_mcs_preserves_spin_values():
 
 def test_mcs_attempts_every_site_exactly_once():
     class RecordingIsing2D(Ising2D):
-        def __init__(self, L, seed):
+        def __init__(self, L: int, seed: int) -> None:
             super().__init__(L=L, seed=seed)
-            self.attempted_sites = []
+            self.attempted_sites: list[tuple[int, int]] = []
 
-        def metropolis_attempt(self, x, y, beta):
+        def metropolis_attempt(self, x: int, y: int, beta: float) -> bool:
             self.attempted_sites.append((x, y))
             return False
 
@@ -39,6 +39,14 @@ def test_mcs_attempts_every_site_exactly_once():
     assert len(model.attempted_sites) == model.N
     assert set(model.attempted_sites) == expected_sites
     assert len(set(model.attempted_sites)) == model.N
+
+
+def test_shuffled_site_indices_are_a_permutation():
+    model = Ising2D(L=4, seed=9)
+    indices = model.shuffled_site_indices()
+
+    assert len(indices) == model.N
+    assert sorted(indices) == list(range(model.N))
 
 
 def test_simulation_outputs_finite_values():
