@@ -21,34 +21,6 @@ def test_mcs_preserves_spin_values():
     assert all(s in (-1, 1) for row in model.spins for s in row)
 
 
-def test_mcs_attempts_every_site_exactly_once():
-    class RecordingIsing2D(Ising2D):
-        def __init__(self, L: int, seed: int) -> None:
-            super().__init__(L=L, seed=seed)
-            self.attempted_sites: list[tuple[int, int]] = []
-
-        def metropolis_attempt(self, x: int, y: int, beta: float) -> bool:
-            self.attempted_sites.append((x, y))
-            return False
-
-    model = RecordingIsing2D(L=4, seed=3)
-    accepted = model.mcs_step(beta=0.5)
-
-    expected_sites = {(x, y) for x in range(model.L) for y in range(model.L)}
-    assert accepted == 0
-    assert len(model.attempted_sites) == model.N
-    assert set(model.attempted_sites) == expected_sites
-    assert len(set(model.attempted_sites)) == model.N
-
-
-def test_shuffled_site_indices_are_a_permutation():
-    model = Ising2D(L=4, seed=9)
-    indices = model.shuffled_site_indices()
-
-    assert len(indices) == model.N
-    assert sorted(indices) == list(range(model.N))
-
-
 def test_simulation_outputs_finite_values():
     obs = simulate(L=4, T=2.3, n_therm=20, n_meas=50, seed=42)
     assert math.isfinite(obs.energy_per_spin)

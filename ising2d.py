@@ -40,17 +40,7 @@ class Ising2D:
             return True
         return False
 
-    def shuffled_site_indices(self) -> list[int]:
-        """Return every flattened lattice index exactly once in random order."""
-        indices = list(range(self.N))
-        self.rng.shuffle(indices)
-        return indices
-
-    def mcs_step(self, beta: float) -> int:
-        """Attempt one update for every lattice site in random order."""
-        accepted = 0
-        for index in self.shuffled_site_indices():
-            x, y = divmod(index, self.L)
+main
             accepted += int(self.metropolis_attempt(x, y, beta))
         return accepted
 
